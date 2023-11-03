@@ -1,7 +1,10 @@
 package com.job.process.config;
 
+import java.io.File;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
@@ -10,11 +13,13 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.RepositoryItemWriter;
+import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
@@ -34,13 +39,19 @@ public class BatchConfig {
 	private final CustomerRepository customerRepository;
 
 	@Bean
-	public ItemReader<CustomerMaster> reader() {
-		return new FlatFileItemReaderBuilder<CustomerMaster>().name("csvModelItemReader")
-				.resource(new FileSystemResource("src/main/resources/customers.csv")).delimited()
-				.names("id", "firstName", "lastName", "email", "gender", "contactNo", "country", "dob").linesToSkip(1)
+	@StepScope
+	public FlatFileItemReader<CustomerMaster> reader(@Value("#{jobParameters[filePath]}") String file) {
+		return new FlatFileItemReaderBuilder<CustomerMaster>()
+				.name("csvModelItemReader")
+				.resource(new FileSystemResource(new File(file)))
+				.delimited()
+				.names("id", "firstName", "lastName", "email", "gender", "contactNo", "country", "dob")
+				.linesToSkip(1)
 				.fieldSetMapper(new BeanWrapperFieldSetMapper<>() {
-					{setTargetType(CustomerMaster.class);}}).build();
-		/*
+					{setTargetType(CustomerMaster.class);}})
+				.build();
+		
+		/* basic flow implementation
 		@Bean
 		public FlatFileItemReader<CustomerMaster> reader() {
 			FlatFileItemReader<CustomerMaster> itemReader = new FlatFileItemReader<>();
@@ -54,6 +65,7 @@ public class BatchConfig {
 		*/
 	}
 
+	@Bean
 	public LineMapper<CustomerMaster> lineMapper() {
 		DefaultLineMapper<CustomerMaster> lineMapper = new DefaultLineMapper<>();
 
