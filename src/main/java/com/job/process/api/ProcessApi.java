@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.job.process.repository.CustomerRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,6 +32,8 @@ import lombok.RequiredArgsConstructor;
 public class ProcessApi {
 
 	private final JobLauncher jobLauncher;
+
+	private final CustomerRepository repository;
 
 	private final Job job;
 
@@ -55,10 +59,10 @@ public class ProcessApi {
 			JobExecution run = jobLauncher.run(job, jobParameters);
 			map.put("Success", true);
 			map.put("Exit Status", run.getExitStatus());
-			map.put("Status", run.getStatus());
+			map.put("Total Records Processed", repository.count());
 			map.put("startTime", run.getStartTime());
 			map.put("endTime", run.getEndTime());
-			map.put("totalTime", Duration.between(run.getStartTime(), run.getEndTime()));
+			map.put("totalTime", Duration.between(run.getStartTime(), run.getEndTime()).getSeconds());
 
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | JobInstanceAlreadyCompleteException
 				| JobParametersInvalidException e) {
