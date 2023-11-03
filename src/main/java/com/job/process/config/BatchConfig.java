@@ -38,11 +38,12 @@ public class BatchConfig {
 
 	private final CustomerRepository customerRepository;
 
+	// Getiing file path from controller
 	@Bean
 	@StepScope
 	public FlatFileItemReader<CustomerMaster> reader(@Value("#{jobParameters[filePath]}") String file) {
 		return new FlatFileItemReaderBuilder<CustomerMaster>()
-				.name("csvModelItemReader")
+				.name("CustomerItemReader")
 				.resource(new FileSystemResource(new File(file)))
 				.delimited()
 				.names("id", "firstName", "lastName", "email", "gender", "contactNo", "country", "dob")
@@ -70,8 +71,10 @@ public class BatchConfig {
 		DefaultLineMapper<CustomerMaster> lineMapper = new DefaultLineMapper<>();
 
 		DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
+		// csv file delimeter
 		lineTokenizer.setDelimiter(",");
 		lineTokenizer.setStrict(false);
+		// headers of csv file
 		lineTokenizer.setNames("id", "firstName", "lastName", "email", "gender", "contactNo", "country", "dob");
 		BeanWrapperFieldSetMapper<CustomerMaster> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
 		fieldSetMapper.setTargetType(CustomerMaster.class);
@@ -97,7 +100,7 @@ public class BatchConfig {
 	public Step step(ItemReader<CustomerMaster> reader, ItemProcessor<CustomerMaster, CustomerMaster> processor,
 			ItemWriter<CustomerMaster> writer, JobRepository jobRepository,
 			PlatformTransactionManager transactionManager) {
-		return new StepBuilder("myStep", jobRepository).<CustomerMaster, CustomerMaster>chunk(10, transactionManager)
+		return new StepBuilder("step", jobRepository).<CustomerMaster, CustomerMaster>chunk(10, transactionManager)
 				.reader(reader)
 				// Use when you Wants to enable custom processing
 				// .processor(processor)
@@ -108,7 +111,7 @@ public class BatchConfig {
 
 	@Bean
 	public Job job(Step step, JobRepository jobRepository) {
-		return new JobBuilder("myJob", jobRepository)
+		return new JobBuilder("job", jobRepository)
 				.incrementer(new RunIdIncrementer())
 				.flow(step)
 				.end()
