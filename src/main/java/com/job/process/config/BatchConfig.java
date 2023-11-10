@@ -119,7 +119,7 @@ public class BatchConfig {
 	}
 
 	/**
-	 * Custom task executor to execute 10 threds at a time asynchronoualy.
+	 * Custom task executor to execute 100 threds at a time asynchronoualy.
 	 * 
 	 * @return taskExecutor
 	 */
