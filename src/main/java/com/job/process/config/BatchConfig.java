@@ -119,14 +119,14 @@ public class BatchConfig {
 	}
 
 	/**
-	 * Custom task executor to execute 100 threds at a time asynchronoualy.
+	 * Custom task executor to execute 100 threads at a time asynchronoualy.
 	 * 
 	 * @return taskExecutor
 	 */
 	@Bean
 	public TaskExecutor taskExecutor() {
 		SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
-		asyncTaskExecutor.setConcurrencyLimit(100);
+		asyncTaskExecutor.setConcurrencyLimit(1000);
 		return asyncTaskExecutor;
 		
 		/* Another Implementation
