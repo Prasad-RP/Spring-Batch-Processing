@@ -38,7 +38,7 @@ public class BatchConfig {
 
 	private final CustomerRepository customerRepository;
 
-	// Getiing file path from controller
+	// Getting file path from controller
 	@Bean
 	@StepScope
 	public FlatFileItemReader<CustomerMaster> reader(@Value("#{jobParameters[filePath]}") String file) {
@@ -49,7 +49,10 @@ public class BatchConfig {
 				.names("id", "firstName", "lastName", "email", "gender", "contactNo", "country", "dob")
 				.linesToSkip(1)
 				.fieldSetMapper(new BeanWrapperFieldSetMapper<>() {
-					{setTargetType(CustomerMaster.class);}})
+					{
+						setTargetType(CustomerMaster.class);
+					}
+					})
 				.build();
 		
 		/* basic flow implementation
@@ -119,7 +122,7 @@ public class BatchConfig {
 	}
 
 	/**
-	 * Custom task executor to execute 100 threads at a time asynchronoualy.
+	 * Custom task executor to execute 100 threads at a time asynchronously.
 	 * 
 	 * @return taskExecutor
 	 */

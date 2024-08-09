@@ -24,11 +24,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.job.process.repository.CustomerRepository;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/process")
+@Tag(name = "Batch Processing Apis", description = "Api for batch processing.")
 public class ProcessApi {
 
 	private final JobLauncher jobLauncher;

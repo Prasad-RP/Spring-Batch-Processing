@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.job.process.service.CustomerService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/customer")
+@Tag(name = "Custom Pagination Apis")
 public class CustomerApis {
 
 	private final CustomerService customerService;
